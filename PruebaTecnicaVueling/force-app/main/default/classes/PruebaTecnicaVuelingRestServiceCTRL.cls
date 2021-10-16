@@ -45,12 +45,12 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
                 }
                 
                 if( !listProductsToCreate.isEmpty() ) {
-                	
+
                     Database.insert( listProductsToCreate );
                     User logisticsDirector = getLogisticsDirector();
                     sendToApprovalProcess( listProductsToCreate, logisticsDirector );
-                	listEnviosToInsert.addAll( createEnvios( listProductsToCreate, mapEnvios ) );
-                    
+                	listEnviosToInsert.addAll( createEnvios( listProductsToCreate, mapEnvios ) );     
+                     
                 }
                 
                 if( !listEnviosToInsert.isEmpty() ) {
@@ -119,13 +119,13 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
     }
     
     private static User getLogisticsDirector(){  
-        List<User> userLogisticsDirector = [ SELECT Id FROM User WHERE Email =: System.Label.LogisticsDirector LIMIT 1 ];
+        List<User> userLogisticsDirector = [ SELECT Id FROM User WHERE Email =: System.Label.LogisticsDirector WITH SECURITY_ENFORCED LIMIT 1 ];
         return userLogisticsDirector[0];  
     }
     
     private static Map<String, Product2> getExistingProductsMapByProductId( Set<String> setProductId ) {
     	
-    	List<Product2> listExistingProducts = [ SELECT ID, Name FROM Product2 WHERE Name IN: setProductId ];
+    	List<Product2> listExistingProducts = [ SELECT ID, Name FROM Product2 WHERE Name IN: setProductId WITH SECURITY_ENFORCED ];
         
         Map<String, Product2> mapExistingProducts = new Map<String, Product2>();
         
@@ -141,7 +141,8 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
         public List<EnviosData> envios { get; set; }
 
     }
-    
+        
+    @SuppresWarnings('PMD.AvoidNonExistentAnnotations')
     public class EnviosData {
 		
         public List<EnviosData> envios { get; set; }
@@ -152,6 +153,7 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
         public String almacen_Destino { get; set; }
 
     }
+
     public class ResponseWrapper {
 		
         public ResponseWrapper(){
