@@ -50,7 +50,7 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
                     User logisticsDirector = getLogisticsDirector();
                     sendToApprovalProcess( listProductsToCreate, logisticsDirector );
                 	listEnviosToInsert.addAll( createEnvios( listProductsToCreate, mapEnvios ) );     
-                     
+
                 }
                 
                 if( !listEnviosToInsert.isEmpty() ) {
@@ -154,6 +154,7 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
 
     }
 
+    @SuppresWarnings('PMD.EmptyStatementBlock')
     public class ResponseWrapper {
 		
         public ResponseWrapper(){
