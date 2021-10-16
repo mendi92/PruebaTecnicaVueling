@@ -11,7 +11,8 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
             Set<String> setProductId = new Set<String>();
             Map<String,ShipmentData> mapShipment = new Map<String,ShipmentData>();
             
-            
+            AuditShipment__c auditData = generateAuditData( jsonString );
+
             if ( !shipmentWrap.envios.isEmpty() ) {
                 
                 for ( ShipmentData shipmentItem : shipmentWrap.envios ) {
@@ -24,7 +25,6 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
                 
                 List<Envio__c> listShipmentToInsert = new List<Envio__c>();
  				List<Product2> listProductsToCreate = new List<Product2>();
-                List<AuditShipment__c> listAuditData = new List<AuditShipment__c>();
 
                 for ( ShipmentData shipmentItem : mapShipment.values() ) {
 
@@ -33,7 +33,7 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
                     
                     if ( productFromMap != null ) {
                         
-                        listShipmentToInsert.add( createEnvios( productFromMap, shipmentItem ) );
+                        listShipmentToInsert.add( createEnvios( productFromMap, shipmentItem, auditData ) );
                         
                     } else {
                         
@@ -41,13 +41,7 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
 
                         listProductsToCreate.add( newProduct );
                         
-                    }
-
-                    AuditShipment__c auditShipment = new AuditShipment__c(
-                        DataRecieved__c =JSON.serialize(shipmentItem), Product_ID__c = productFromMap != null ? productFromMap.Name : newProduct.Name 
-                        );
-                    listAuditData.add(auditShipment);
-                    
+                    }        
                 }
                 
                 if ( !listProductsToCreate.isEmpty() && Envio__c.SObjectType.getDescribe().isAccessible() ) {
@@ -55,16 +49,12 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
                     Database.insert( listProductsToCreate );
                     User logisticsDirector = getLogisticsDirector();
                     sendToApprovalProcess( listProductsToCreate, logisticsDirector );
-                	listShipmentToInsert.addAll( createEnvios( listProductsToCreate, mapShipment ) );     
+                	listShipmentToInsert.addAll( createEnvios( listProductsToCreate, mapShipment, auditData ) );     
 
                 }
                 
                 if ( !listShipmentToInsert.isEmpty() && Envio__c.SObjectType.getDescribe().isAccessible() ) {
 					Database.insert( listShipmentToInsert );
-                }
-
-                if( !listAuditData.isEmpty() && AuditShipment__c.SObjectType.getDescribe().isAccessible() ){
-                    Database.insert( listAuditData );
                 }
             }
             
@@ -78,14 +68,26 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
     	return JSON.serialize( responseWrapper ); 
     }
     
-    private static List<Envio__c> createEnvios( List<Product2> listProductsToCreate, Map<String,ShipmentData> mapShipment ) {     
+    private static AuditShipment__c generateAuditData(String jsonString){
+
+        AuditShipment__c auditData = new  AuditShipment__c(DataRecieved__c = jsonString);
+
+        if (AuditShipment__c.SObjectType.getDescribe().isAccessible()) {
+            Database.insert( auditData );
+        }
+
+        return auditData;
+
+    }
+
+    private static List<Envio__c> createEnvios( List<Product2> listProductsToCreate, Map<String,ShipmentData> mapShipment, AuditShipment__c auditData ) {     
         
         List<Envio__c> listEnvios = new List<Envio__c>();
         
         for ( Product2 product : listProductsToCreate ) {
         	ShipmentData shipmentItem = mapShipment.get( product.Name );
             if ( shipmentItem != null ){
-            	listEnvios.add( createEnvios( product, shipmentItem ) );	   
+            	listEnvios.add( createEnvios( product, shipmentItem, auditData ) );	   
             }
         }
         
@@ -93,13 +95,14 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
         
     }
     
-    private static Envio__c createEnvios( Product2 product, ShipmentData shipmentItem ) {    
+    private static Envio__c createEnvios( Product2 product, ShipmentData shipmentItem, AuditShipment__c auditData ) {    
         Envio__c newEnvio = new Envio__c(
             Fecha_Envio__c = date.valueOf( shipmentItem.fecha_envio ),
             Id_producto__c = product.Id,
             Descripcion__c = shipmentItem.descripcion_Producto,
             Cantidad__c = shipmentItem.cantidad,
-            Almacen__c =  shipmentItem.almacen_Destino
+            Almacen__c =  shipmentItem.almacen_Destino,
+            AuditShipment__c = auditData.Id
         );
         return newEnvio;
     }
