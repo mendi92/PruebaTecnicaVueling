@@ -24,27 +24,33 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
                 
                 List<Envio__c> listShipmentToInsert = new List<Envio__c>();
  				List<Product2> listProductsToCreate = new List<Product2>();
-                
+                List<AuditShipment__c> listAuditData = new List<AuditShipment__c>();
+
                 for ( ShipmentData shipmentItem : mapShipment.values() ) {
 
                 	Product2 productFromMap = existingProducts.get( shipmentItem.id_producto ); 
-                        
+                    Product2 newProduct = new Product2();  
+                    
                     if ( productFromMap != null ) {
                         
                         listShipmentToInsert.add( createEnvios( productFromMap, shipmentItem ) );
                         
                     } else {
                         
-                        Product2 newProduct = new Product2(
-                        	Name = shipmentItem.id_producto
-                        );                    	
-                        
+                        newProduct.Name = shipmentItem.id_producto;
+
                         listProductsToCreate.add( newProduct );
                         
-                    }	
+                    }
+
+                    AuditShipment__c auditShipment = new AuditShipment__c(
+                        DataRecieved__c =JSON.serialize(shipmentItem), Product_ID__c = productFromMap != null ? productFromMap.Name : newProduct.Name 
+                        );
+                    listAuditData.add(auditShipment);
+                    
                 }
                 
-                if( !listProductsToCreate.isEmpty() && Envio__c.SObjectType.getDescribe().isAccessible() ) {
+                if ( !listProductsToCreate.isEmpty() && Envio__c.SObjectType.getDescribe().isAccessible() ) {
 
                     Database.insert( listProductsToCreate );
                     User logisticsDirector = getLogisticsDirector();
@@ -53,8 +59,12 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
 
                 }
                 
-                if( !listShipmentToInsert.isEmpty() && Envio__c.SObjectType.getDescribe().isAccessible()) {
+                if ( !listShipmentToInsert.isEmpty() && Envio__c.SObjectType.getDescribe().isAccessible() ) {
 					Database.insert( listShipmentToInsert );
+                }
+
+                if( !listAuditData.isEmpty() && AuditShipment__c.SObjectType.getDescribe().isAccessible() ){
+                    Database.insert( listAuditData );
                 }
             }
             
@@ -72,9 +82,9 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
         
         List<Envio__c> listEnvios = new List<Envio__c>();
         
-        for( Product2 product : listProductsToCreate ){
+        for ( Product2 product : listProductsToCreate ) {
         	ShipmentData shipmentItem = mapShipment.get( product.Name );
-            if( shipmentItem != null ){
+            if ( shipmentItem != null ){
             	listEnvios.add( createEnvios( product, shipmentItem ) );	   
             }
         }
