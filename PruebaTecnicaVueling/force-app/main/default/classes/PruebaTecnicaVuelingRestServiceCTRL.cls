@@ -2,41 +2,41 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
     
     public static String insertNewShipment(String jsonString) {
         
-        EnviosWrapper enviosWrap = new EnviosWrapper();
+        ShipmentsWrapper shipmentWrap = new ShipmentsWrapper();
         ResponseWrapper responseWrapper = new ResponseWrapper();
         
         try {
         
-        	enviosWrap = getDeserializedJSON( jsonString );
+        	shipmentWrap = getDeserializedJSON( jsonString );
             Set<String> setProductId = new Set<String>();
-            Map<String,EnviosData> mapEnvios = new Map<String,EnviosData>();
+            Map<String,ShipmentData> mapShipment = new Map<String,ShipmentData>();
             
             
-            if ( !enviosWrap.envios.isEmpty() ) {
+            if ( !shipmentWrap.envios.isEmpty() ) {
                 
-                for ( EnviosData envioItem : enviosWrap.envios ) {
-                    setProductId.add( envioItem.id_producto );
-                    mapEnvios.put( envioItem.id_producto, envioItem );
+                for ( ShipmentData shipmentItem : shipmentWrap.envios ) {
+                    setProductId.add( shipmentItem.id_producto );
+                    mapShipment.put( shipmentItem.id_producto, shipmentItem );
                 }
                 
                 Map<String, Product2> existingProducts = new Map<String, Product2>();
                 existingProducts = getExistingProductsMapByProductId( setProductId );
                 
-                List<Envio__c> listEnviosToInsert = new List<Envio__c>();
+                List<Envio__c> listShipmentToInsert = new List<Envio__c>();
  				List<Product2> listProductsToCreate = new List<Product2>();
                 
-                for ( EnviosData envioItem : mapEnvios.values() ) {
+                for ( ShipmentData shipmentItem : mapShipment.values() ) {
 
-                	Product2 productFromMap = existingProducts.get( envioItem.id_producto ); 
+                	Product2 productFromMap = existingProducts.get( shipmentItem.id_producto ); 
                         
                     if ( productFromMap != null ) {
                         
-                        listEnviosToInsert.add( createEnvios( productFromMap, envioItem ) );
+                        listShipmentToInsert.add( createEnvios( productFromMap, shipmentItem ) );
                         
                     } else {
                         
                         Product2 newProduct = new Product2(
-                        	Name = envioItem.id_producto
+                        	Name = shipmentItem.id_producto
                         );                    	
                         
                         listProductsToCreate.add( newProduct );
@@ -49,12 +49,12 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
                     Database.insert( listProductsToCreate );
                     User logisticsDirector = getLogisticsDirector();
                     sendToApprovalProcess( listProductsToCreate, logisticsDirector );
-                	listEnviosToInsert.addAll( createEnvios( listProductsToCreate, mapEnvios ) );     
+                	listShipmentToInsert.addAll( createEnvios( listProductsToCreate, mapShipment ) );     
 
                 }
                 
-                if( !listEnviosToInsert.isEmpty() && Envio__c.SObjectType.getDescribe().isAccessible()) {
-					Database.insert( listEnviosToInsert );
+                if( !listShipmentToInsert.isEmpty() && Envio__c.SObjectType.getDescribe().isAccessible()) {
+					Database.insert( listShipmentToInsert );
                 }
             }
             
@@ -68,14 +68,14 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
     	return JSON.serialize( responseWrapper ); 
     }
     
-    private static List<Envio__c> createEnvios( List<Product2> listProductsToCreate, Map<String,EnviosData> mapEnvios ) {     
+    private static List<Envio__c> createEnvios( List<Product2> listProductsToCreate, Map<String,ShipmentData> mapShipment ) {     
         
         List<Envio__c> listEnvios = new List<Envio__c>();
         
         for( Product2 product : listProductsToCreate ){
-        	EnviosData envioItem = mapEnvios.get( product.Name );
-            if( envioItem != null ){
-            	listEnvios.add( createEnvios( product, envioItem ) );	   
+        	ShipmentData shipmentItem = mapShipment.get( product.Name );
+            if( shipmentItem != null ){
+            	listEnvios.add( createEnvios( product, shipmentItem ) );	   
             }
         }
         
@@ -83,13 +83,13 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
         
     }
     
-    private static Envio__c createEnvios( Product2 product, EnviosData envioItem ) {    
+    private static Envio__c createEnvios( Product2 product, ShipmentData shipmentItem ) {    
         Envio__c newEnvio = new Envio__c(
-            Fecha_Envio__c = date.valueOf( envioItem.fecha_envio ),
+            Fecha_Envio__c = date.valueOf( shipmentItem.fecha_envio ),
             Id_producto__c = product.Id,
-            Descripcion__c = envioItem.descripcion_Producto,
-            Cantidad__c = envioItem.cantidad,
-            Almacen__c =  envioItem.almacen_Destino
+            Descripcion__c = shipmentItem.descripcion_Producto,
+            Cantidad__c = shipmentItem.cantidad,
+            Almacen__c =  shipmentItem.almacen_Destino
         );
         return newEnvio;
     }
@@ -114,8 +114,8 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
         }       
     }
     
-    private static EnviosWrapper getDeserializedJSON( String jsonString ) {    
-    	return ( EnviosWrapper ) JSON.deserialize( jsonString, EnviosWrapper.class );
+    private static ShipmentsWrapper getDeserializedJSON( String jsonString ) {    
+    	return ( ShipmentsWrapper ) JSON.deserialize( jsonString, ShipmentsWrapper.class );
     }
     
     private static User getLogisticsDirector(){  
@@ -136,15 +136,14 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
         return mapExistingProducts;
     }
         
-    public class EnviosWrapper {
+    public class ShipmentsWrapper {
 		
-        public List<EnviosData> envios { get; set; }
+        public List<ShipmentData> envios { get; set; }
 
     }
         
-    public class EnviosData {
+    public class ShipmentData {
 		
-        public List<EnviosData> envios { get; set; }
         public String fecha_envio { get; set; }
         public String id_producto { get; set; }
         public String descripcion_Producto { get; set; }
