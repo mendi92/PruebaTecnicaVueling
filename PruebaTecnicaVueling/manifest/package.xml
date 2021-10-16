@@ -4,6 +4,7 @@
         <members>PruebaTecnicaVuelingRestServiceCTRL</members>
         <members>PruebaTecnicaVuelingRestService</members>
         <members>PruebaTecnicaVuelingConstants</members>
+        <members>PruebaTecnicaVuelingRSCTRLTest</members>
         <name>ApexClass</name>
     </types>
 	<types>
