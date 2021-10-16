@@ -44,7 +44,7 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
                     }	
                 }
                 
-                if( !listProductsToCreate.isEmpty() ) {
+                if( !listProductsToCreate.isEmpty() && Envio__c.SObjectType.getDescribe().isAccessible() ) {
 
                     Database.insert( listProductsToCreate );
                     User logisticsDirector = getLogisticsDirector();
@@ -53,7 +53,7 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
 
                 }
                 
-                if( !listEnviosToInsert.isEmpty() ) {
+                if( !listEnviosToInsert.isEmpty() && Envio__c.SObjectType.getDescribe().isAccessible()) {
 					Database.insert( listEnviosToInsert );
                 }
             }
