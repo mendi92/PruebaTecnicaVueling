@@ -11,11 +11,11 @@ public class PruebaTecnicaVuelingRSCTRLTest {
 
         Product2 product = [SELECT Id,Name FROM Product2 WHERE NAME =: 'PRODUCTOTEST1' ];
         
-        System.AssertEquals( 'PRODUCTOTEST1', product.Name );
+        System.AssertEquals( 'PRODUCTOTEST1', product.Name, 'Prod error');
         
         PruebaTecnicaVuelingRestServiceCTRL.ResponseWrapper responseWrapper = new PruebaTecnicaVuelingRestServiceCTRL.ResponseWrapper();
         responseWrapper = ( PruebaTecnicaVuelingRestServiceCTRL.ResponseWrapper )JSON.deserialize( res, PruebaTecnicaVuelingRestServiceCTRL.ResponseWrapper.class );
-        System.AssertEquals( '200', responseWrapper.responseCode );
+        System.AssertEquals( '200', responseWrapper.responseCode, 'Response Code error' );
     }
     
     @isTest
@@ -33,11 +33,11 @@ public class PruebaTecnicaVuelingRSCTRLTest {
 
         Product2 product = [SELECT Id,Name FROM Product2 WHERE NAME =: 'testyaexiste' ];
 
-        System.AssertEquals( 'testyaexiste', product.Name );
+        System.AssertEquals( 'testyaexiste', product.Name, 'Prod error' );
 
         PruebaTecnicaVuelingRestServiceCTRL.ResponseWrapper responseWrapper = new PruebaTecnicaVuelingRestServiceCTRL.ResponseWrapper();
         responseWrapper = ( PruebaTecnicaVuelingRestServiceCTRL.ResponseWrapper ) JSON.deserialize( res2, PruebaTecnicaVuelingRestServiceCTRL.ResponseWrapper.class );
-        System.AssertEquals( '200', responseWrapper.responseCode );
+        System.AssertEquals( '200', responseWrapper.responseCode, 'Response Code ERROR' );
     }
 
     @isTest
@@ -50,6 +50,6 @@ public class PruebaTecnicaVuelingRSCTRLTest {
         
          PruebaTecnicaVuelingRestServiceCTRL.ResponseWrapper responseWrapper = new PruebaTecnicaVuelingRestServiceCTRL.ResponseWrapper();
          responseWrapper = ( PruebaTecnicaVuelingRestServiceCTRL.ResponseWrapper ) JSON.deserialize( res3, PruebaTecnicaVuelingRestServiceCTRL.ResponseWrapper.class );
-         System.AssertEquals( '500', responseWrapper.responseCode );
+         System.AssertEquals( '500', responseWrapper.responseCode, 'Response Code Error' );
     }
 }
