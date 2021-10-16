@@ -142,7 +142,6 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
 
     }
         
-    @SuppresWarnings('PMD.AvoidNonExistentAnnotations')
     public class EnviosData {
 		
         public List<EnviosData> envios { get; set; }
@@ -154,7 +153,6 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
 
     }
 
-    @SuppresWarnings('PMD.EmptyStatementBlock')
     public class ResponseWrapper {
 		
         public ResponseWrapper(){
