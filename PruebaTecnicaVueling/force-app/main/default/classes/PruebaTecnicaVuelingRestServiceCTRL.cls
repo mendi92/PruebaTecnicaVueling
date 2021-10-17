@@ -35,11 +35,9 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
                         listShipmentToInsert.add( createEnvios( productFromMap, shipmentItem, auditData ) );
                         
                     } else {
-                        
                         Product2 newProduct = new Product2( Name = shipmentItem.id_producto, Description = shipmentItem.descripcion_Producto ); 
 
-                        listProductsToCreate.add( newProduct );
-                        
+                        listProductsToCreate.add( newProduct );  
                     }        
                 }
                 

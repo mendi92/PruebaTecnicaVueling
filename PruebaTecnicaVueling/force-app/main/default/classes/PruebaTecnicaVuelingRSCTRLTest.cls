@@ -10,7 +10,7 @@ public class PruebaTecnicaVuelingRSCTRLTest {
     @isTest
     public static void test200OKNewProd() { 
         
-        String jsonString = '{ "envios":[{"fecha_envio":"2021-09-22","id_producto":"PRODUCTOTEST1","descripción Producto":"prod 1","cantidad":1,"almacen_Destino":"BCN"}  ]}';
+        String jsonString = '{ "envios":[{"fecha_envio":"2021-09-22","id_producto":"PRODUCTOTEST1","descripcion_Producto":"prod 1","cantidad":1,"almacen_Destino":"BCN"}  ]}';
         
         Test.StartTest();
         String res = PruebaTecnicaVuelingRestServiceCTRL.insertNewShipment(jsonString);
@@ -28,7 +28,7 @@ public class PruebaTecnicaVuelingRSCTRLTest {
     @isTest
     public static void test200OKExistingPod() {
 
-        String jsonString2 = '{ "envios":[{"fecha_envio":"2021-09-22","id_producto":"testyaexiste","descripción Producto":"prod 1","cantidad":1,"almacen_Destino":"BCN"}  ]}';
+        String jsonString2 = '{ "envios":[{"fecha_envio":"2021-09-22","id_producto":"testyaexiste","descripcion_Producto":"prod 1","cantidad":1,"almacen_Destino":"BCN"}  ]}';
        
         Test.StartTest();
         String res2 = PruebaTecnicaVuelingRestServiceCTRL.insertNewShipment(jsonString2);
@@ -46,7 +46,7 @@ public class PruebaTecnicaVuelingRSCTRLTest {
     @isTest
     public static void test500KO(){
          //JSON malformed
-         String jsonString3 = '{ "envios:[{"fecha_envio":"2021-09-22","id_producto":"productotest231223245","descripción Producto":"prod 1","cantidad":1,"almacen_Destino":"BCN"}  ]}';
+         String jsonString3 = '{ "envios:[{"fecha_envio":"2021-09-22","id_producto":"productotest231223245","descripcion_Producto":"prod 1","cantidad":1,"almacen_Destino":"BCN"}  ]}';
          Test.StartTest();
          String res3 = PruebaTecnicaVuelingRestServiceCTRL.insertNewShipment(jsonString3);
          Test.StopTest();
@@ -59,7 +59,7 @@ public class PruebaTecnicaVuelingRSCTRLTest {
     @isTest
     public static void testRestService200OK(){
 
-        String jsonString = '{ "envios":[{"fecha_envio":"2021-09-22","id_producto":"PRODUCTOTEST1","descripción Producto":"prod 1","cantidad":1,"almacen_Destino":"BCN"}  ]}';
+        String jsonString = '{ "envios":[{"fecha_envio":"2021-09-22","id_producto":"PRODUCTOTEST1","descripcion_Producto":"prod 1","cantidad":1,"almacen_Destino":"BCN"}  ]}';
         
         RestContext.request = new RestRequest();
         RestContext.response = new RestResponse();
