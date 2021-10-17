@@ -29,14 +29,15 @@ public with sharing class PruebaTecnicaVuelingRestServiceCTRL {
                 for ( ShipmentData shipmentItem : mapShipment.values() ) {
 
                 	Product2 productFromMap = existingProducts.get( shipmentItem.id_producto ); 
-
+                    Product2 newProduct = new Product2();  
+                    
                     if ( productFromMap != null ) {
                         
                         listShipmentToInsert.add( createEnvios( productFromMap, shipmentItem, auditData ) );
                         
                     } else {
                         
-                        Product2 newProduct = new Product2( Name = shipmentItem.id_producto, Description = shipmentItem.descripcion_Producto ); 
+                        newProduct.Name = shipmentItem.id_producto;
 
                         listProductsToCreate.add( newProduct );
                         
